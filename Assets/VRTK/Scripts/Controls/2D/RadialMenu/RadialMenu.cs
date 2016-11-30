@@ -65,6 +65,10 @@ namespace VRTK
 
         #region Unity Methods
 
+		public List<GameObject> redObject;
+		public List<GameObject> greenObject;
+		public List<GameObject> blueObject;
+
         private void Awake()
         {
             if (Application.isPlaying)
@@ -252,7 +256,8 @@ namespace VRTK
         //Creates all the button Arcs and populates them with desired icons
         public void RegenerateButtons()
         {
-            RemoveAllButtons();
+			Color[] colors = { Color.red, Color.green, Color.blue};
+			RemoveAllButtons();
             for (int i = 0; i < buttons.Count; i++)
             {
                 // Initial placement/instantiation
@@ -274,7 +279,7 @@ namespace VRTK
                 }
                 int fillPerc = (int)(100f / buttons.Count);
                 circle.fillPercent = fillPerc;
-                circle.color = buttonColor;
+				circle.color = colors[i];
 
                 //Final placement/rotation
                 float angle = ((360 / buttons.Count) * i) + offsetRotation;
@@ -315,11 +320,65 @@ namespace VRTK
                     {
                         buttonIcon.transform.eulerAngles = GetComponentInParent<Canvas>().transform.eulerAngles;
                     }
+
+
                 }
+				if(i == 0){
+					buttons [i].OnClick.AddListener (() => SetRed ());	
+				}
+				else if(i == 1){
+					buttons [i].OnClick.AddListener (() => SetGreen ());	
+				}
+				else if(i == 2){
+					buttons [i].OnClick.AddListener (() => SetBlue ());	
+				}
+
                 menuButtons.Add(newButton);
 
             }
         }
+
+		public void SetRed(){
+			foreach(var go in redObject){
+				go.gameObject.SetActive (true);
+			}
+
+			foreach(var go in greenObject){
+				go.gameObject.SetActive (false);
+			}
+
+			foreach(var go in blueObject){
+				go.gameObject.SetActive (false);
+			}
+		}
+
+		public void SetGreen(){
+			foreach(var go in redObject){
+				go.gameObject.SetActive (false);
+			}
+
+			foreach(var go in greenObject){
+				go.gameObject.SetActive (true);
+			}
+
+			foreach(var go in blueObject){
+				go.gameObject.SetActive (false);
+			}
+		}
+
+		public void SetBlue(){
+			foreach(var go in redObject){
+				go.gameObject.SetActive (false);
+			}
+
+			foreach(var go in greenObject){
+				go.gameObject.SetActive (false);
+			}
+
+			foreach(var go in blueObject){
+				go.gameObject.SetActive (true);
+			}
+		}
 
         public void AddButton(RadialMenuButton newButton)
         {
