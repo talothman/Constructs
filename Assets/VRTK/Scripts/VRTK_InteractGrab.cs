@@ -61,6 +61,9 @@ namespace VRTK
         private GameObject undroppableGrabbedObject;
         private bool controllerVisibilityState = true;
 
+		// Main flag to lasso objects
+		public bool lasso = false;
+
         public virtual void OnControllerGrabInteractableObject(ObjectInteractEventArgs e)
         {
             if (ControllerGrabInteractableObject != null)
@@ -98,7 +101,7 @@ namespace VRTK
         /// </summary>
         public void AttemptGrab()
         {
-            AttemptGrabObject();
+				AttemptGrabObject();
         }
 
         /// <summary>
@@ -350,7 +353,8 @@ namespace VRTK
 
         private bool GrabInteractedObject()
         {
-            if (controllerAttachJoint == null)
+			//print ("In Attempt grab object");
+			if (controllerAttachJoint == null)
             {
                 InitGrabbedObject();
                 if (grabbedObject)
@@ -388,7 +392,8 @@ namespace VRTK
 
         private void InitGrabbedObject()
         {
-            grabbedObject = interactTouch.GetTouchedObject();
+			//print ("In Attempt grab object");
+			grabbedObject = interactTouch.GetTouchedObject();
             if (grabbedObject)
             {
                 var grabbedObjectScript = grabbedObject.GetComponent<VRTK_InteractableObject>();
@@ -427,7 +432,7 @@ namespace VRTK
 
             influencingGrabbedObject = false;
             currentGrabbedObject.SaveCurrentState();
-            currentGrabbedObject.Grabbed(gameObject);
+			currentGrabbedObject.Grabbed(gameObject);
             currentGrabbedObject.ZeroVelocity();
             currentGrabbedObject.ToggleHighlight(false);
             currentGrabbedObject.ToggleKinematic(false);
@@ -538,7 +543,7 @@ namespace VRTK
 
         private void AttemptGrabObject()
         {
-            var objectToGrab = GetGrabbableObject();
+			var objectToGrab = GetGrabbableObject();
             if (objectToGrab != null)
             {
                 IncrementGrabState();
@@ -576,7 +581,7 @@ namespace VRTK
             else if (objectToGrab.AttachIsClimbObject())
             {
                 return GrabClimbObject();
-            }
+			}
 
             return GrabInteractedObject();
         }
@@ -609,7 +614,7 @@ namespace VRTK
 
         private void DoGrabObject(object sender, ControllerInteractionEventArgs e)
         {
-            AttemptGrabObject();
+			AttemptGrabObject();
         }
 
         private void DoReleaseObject(object sender, ControllerInteractionEventArgs e)
@@ -636,8 +641,9 @@ namespace VRTK
             {
                 if (GetGrabbableObject() != null)
                 {
-                    AttemptGrabObject();
-                    if (GetGrabbedObject() != null)
+					AttemptGrabObject();
+                    
+					if (GetGrabbedObject() != null)
                     {
                         grabPrecognitionTimer = 0f;
                     }
