@@ -177,8 +177,37 @@ namespace VRTK
         {
             if (touchedObject != null)
             {
+                if (GetComponent<VRTK_InteractGrab>().lasso)
+                {
+                    SoftStopTouching(touchedObject);
+                    return;
+                }
+
                 StopTouching(touchedObject);
             }
+        }
+
+        private void SoftStopTouching(GameObject lassoObject)
+        {
+            if (IsObjectInteractable(lassoObject))
+            {
+                OnControllerUntouchInteractableObject(SetControllerInteractEvent(lassoObject.gameObject));
+
+                var untouchedObjectScript = lassoObject.GetComponent<VRTK_InteractableObject>();
+                untouchedObjectScript.StopTouching(gameObject);
+                ResetButtonOverrides(untouchedObjectScript.IsGrabbed(gameObject), untouchedObjectScript.IsUsing(gameObject));
+                if (!untouchedObjectScript.IsTouched())
+                {
+                    untouchedObjectScript.ToggleHighlight(false);
+                }
+            }
+
+            if (updatedHideControllerOnTouch)
+            {
+                controllerActions.ToggleControllerModel(true, touchedObject);
+            }
+
+            CleanupEndTouch();
         }
 
         /// <summary>
@@ -261,10 +290,12 @@ namespace VRTK
 
         private void OnTriggerEnter(Collider collider)
         {
+            
             var colliderInteractableObject = TriggerStart(collider);
             //If the new collider is not part of the existing touched object (and the object isn't being grabbed) then start touching the new object
             if (touchedObject != null && colliderInteractableObject && touchedObject != colliderInteractableObject && !touchedObject.GetComponent<VRTK_InteractableObject>().IsGrabbed())
             {
+                //print("In ontriggerenter");
                 CancelInvoke("ResetTriggerRumble");
                 ResetTriggerRumble();
                 ForceStopTouching();
@@ -284,6 +315,7 @@ namespace VRTK
             var colliderInteractableObject = TriggerStart(collider);
             if (touchedObject == null && colliderInteractableObject && IsObjectInteractable(collider.gameObject))
             {
+                //print("touched object");
                 touchedObject = colliderInteractableObject;
                 var touchedObjectScript = touchedObject.GetComponent<VRTK_InteractableObject>();
 

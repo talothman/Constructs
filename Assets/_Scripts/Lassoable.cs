@@ -13,7 +13,8 @@ public class Lassoable : VRTK_InteractableObject {
 
 	public override void Grabbed(GameObject currentGrabbingObject)
 	{
-		if (!IsGrabbed() || IsSwappable())
+        //print(IsGrabbed());
+        if (!IsGrabbed() || IsSwappable())
 		{
 			PrimaryControllerGrab(currentGrabbingObject);
 		}
@@ -27,6 +28,7 @@ public class Lassoable : VRTK_InteractableObject {
 		{
 			ToggleSnapDropZone(storedSnapDropZone, false);
 		}
+
 		ForceReleaseGrab();
 		RemoveTrackPoint();
 		grabbingObjects.Add(currentGrabbingObject);
@@ -41,7 +43,8 @@ public class Lassoable : VRTK_InteractableObject {
 	private void ForceReleaseGrab()
 	{
 		var grabbingObject = GetGrabbingObject();
-		if (grabbingObject)
+        //print(grabbingObject && !grabbingObject.GetComponent<VRTK_InteractGrab>().lasso);
+        if (grabbingObject)
 		{
 			grabbingObject.GetComponent<VRTK_InteractGrab>().ForceRelease();
 		}
@@ -68,6 +71,8 @@ public class Lassoable : VRTK_InteractableObject {
 		var controllerPoint = point.transform;
 		var grabScript = point.GetComponent<VRTK_InteractGrab>();
 
+        // TODO add a list of controllerAttachPoints to VRTK_InteractGrab and query the latest one
+        // check for lasso mode on from controller side and get one of the attachment points from there
         if (grabScript && grabScript.controllerAttachPoint)
         {
             controllerPoint = grabScript.controllerAttachPoint.transform;
@@ -109,7 +114,7 @@ public class Lassoable : VRTK_InteractableObject {
 
         while (t < 1)
         {
-            transform.localScale = Vector3.Lerp(originalScale, new Vector3(0.1f, 0.1f, 0.1f), t);
+            transform.localScale = Vector3.Lerp(originalScale, new Vector3(0.05f, 0.05f, 0.05f), t);
             t += (Time.deltaTime * 3);
             //lastSetScale = transform.localScale;
             yield return null;
@@ -175,4 +180,14 @@ public class Lassoable : VRTK_InteractableObject {
         }
     }
 
+    public override void StopTouching(GameObject previousTouchingObject)
+    {
+        base.StopTouching(previousTouchingObject);
+        //if (touchingObjects.Contains(previousTouchingObject))
+        //{
+        //    ResetUseState(previousTouchingObject);
+        //    //OnInteractableObjectUntouched(SetInteractableObjectEvent(previousTouchingObject));
+        //    //touchingObjects.Remove(previousTouchingObject);
+        //}
+    }
 }

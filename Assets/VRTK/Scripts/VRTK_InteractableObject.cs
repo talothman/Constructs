@@ -381,6 +381,7 @@ namespace VRTK
         /// <param name="currentGrabbingObject">The game object that is currently grabbing this object.</param>
         public virtual void Grabbed(GameObject currentGrabbingObject)
         {
+            
             if (!IsGrabbed() || IsSwappable())
             {
                 PrimaryControllerGrab(currentGrabbingObject);
