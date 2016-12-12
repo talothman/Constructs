@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 namespace VRTK
 {
+    using System.Collections;
     using UnityEngine;
 
     /// <summary>
@@ -316,11 +317,32 @@ namespace VRTK
         {
             if (controllerAttachJoint != null)
             {
-                return ReleaseAttachedObjectFromController(withThrow);
+                Rigidbody temp = ReleaseAttachedObjectFromController(withThrow);
+                StartCoroutine(MoveToPosition(grabbedObj, transform.position + Random.insideUnitSphere / 2));
+                //grabbedObj.transform.position = transform.position + Random.insideUnitSphere / 2;
+                return temp;
             }
             else
             {
-                return ReleaseParentedObjectFromController(grabbedObj);
+                Rigidbody temp = ReleaseParentedObjectFromController(grabbedObj);
+                //grabbedObj.transform.position = transform.position + Random.insideUnitSphere / 2;
+                StartCoroutine(MoveToPosition(grabbedObj, transform.position + Random.insideUnitSphere / 2));
+                return temp;
+            }
+
+            
+        }
+
+        IEnumerator MoveToPosition(GameObject grabbedObj, Vector3 destination)
+        {
+            float t = 0.0f;
+            Vector3 lastSetPos = transform.position;
+
+            while (t < 1)
+            {
+                grabbedObj.transform.position = Vector3.Lerp(lastSetPos, destination, t);
+                t += (Time.deltaTime * 3);
+                yield return null;
             }
         }
 
@@ -591,7 +613,7 @@ namespace VRTK
             grabEnabledState = 0;
             grabbedObjectList.Remove(grabbedObj);
             grabbedObjectIndex--;
-            grabbedObject = null;
+            //grabbedObject = null;
         }
 
         private GameObject GetGrabbableObject()
